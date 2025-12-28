@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart-Eye Dashboard</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .main-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid #333;
+            padding: 20px;
+            position: relative;
+        }
+
+        .upload-container {
+            border: 3px dashed #00ff88;
+            border-radius: 15px;
+            width: 80%;
+            height: 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: #222;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-container:hover {
+            background: #2a2a2a;
+            border-color: #00bcd4;
+        }
+
+        #preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+            border-radius: 10px;
+        }
+
+        #upload-text {
+            color: #888;
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        h1 { margin: 0; font-size: 3.5rem; color: #fff; }
+        p { font-size: 1.5rem; color: #bbb; margin: 5px 0; }
+
+        .stats-panel {
+            flex: 1.2;
+            background: #121212;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .stats-header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #00ff88;
+            font-size: 1.8rem;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #1a1a1a;
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #333;
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .model-metrics {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+
+        .accuracy-badge {
+            background: linear-gradient(45deg, #00cc6a, #00bcd4);
+            color: #000;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .accuracy-badge h2 { margin: 0; font-size: 1rem; text-transform: uppercase; opacity: 0.8;}
+        .accuracy-badge h3 { margin: 0; font-size: 2.5rem; font-weight: bold;}
+
+        .matrix-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        .matrix-container h4 { margin: 0 0 10px 0; color: #aaa; font-weight: normal;}
+
+        .matrix-img {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+
+        .counter-card {
+            background: #222;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #555;
+            transition: 0.2s;
+        }
+
+        .counter-card span { font-size: 1.1rem; font-weight: bold; }
+        .count-number { font-size: 1.3rem; color: #fff; }
+
+        .card-plastic { border-color: #00bcd4; }
+        .card-glass { border-color: #ff9800; }
+        .card-metal { border-color: #f44336; }
+        .card-paper { border-color: #4caf50; }
+
+        .btn {
+            margin-top: 20px;
+            padding: 12px 40px;
+            background: #00ff88;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn:hover { background: #00cc6a; transform: scale(1.05); }
+        
+        .status { position: absolute; top: 15px; left: 15px; font-size: 14px; color: #555; display: flex; align-items: center; }
+        .status-dot { width: 10px; height: 10px; background: #555; border-radius: 50%; margin-right: 8px; }
+        .status.connected { color: #00ff88; }
+        .status.connected .status-dot { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-panel">
+        <div class="status" id="status">
+            <div class="status-dot"></div>
+            <span id="status-text">Disconnected</span>
+        </div>
+        
+        <div class="upload-container" onclick="document.getElementById('fileInput').click()">
+            <span id="upload-text">Click to Upload Waste Image</span>
+            <img id="preview-image" alt="Preview">
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <button class="btn" onclick="classifyImage()">Classify Now</button>
+
+        <div class="result-box">
+            <h1 id="result-label">--</h1>
+            <p id="result-conf">Waiting for image...</p>
+        </div>
+    </div>
+
+    <div class="stats-panel">
+        <h2 class="stats-header">Dashboard</h2>
+
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('evaluation', this)">📊 Evaluation</button>
+            <button class="tab-btn" onclick="switchTab('session', this)">🔢 Live Session</button>
+        </div>
+
+        <div id="view-evaluation" class="view-section active">
+            <div class="model-metrics">
+                <div class="accuracy-badge">
+                    <h2>Overall Test Accuracy</h2>
+                    <h3>95.6%</h3> 
+                </div>
+                <div class="matrix-container">
+                    <h4>Confusion Matrix</h4>
+                    <img src="confusion_matrix.png" alt="Confusion Matrix" class="matrix-img">
+                </div>
+            </div>
+        </div>
+
+        <div id="view-session" class="view-section">
+            <h4 style="color:#aaa; margin-top:0;">Real-time Counter</h4>
+            <div id="counters-container">
+                <p style="color: #666; font-style: italic; text-align: center; margin-top: 30px;">No scans yet in this session.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const previewImage = document.getElementById('preview-image');
+        const uploadText = document.getElementById('upload-text');
+        const resultLabel = document.getElementById('result-label');
+        const resultConf = document.getElementById('result-conf');
+        const countersContainer = document.getElementById('counters-container');
+        const statusBadge = document.getElementById('status');
+        const statusText = document.getElementById('status-text');
+
+        let ws = new WebSocket("ws://localhost:8000/ws");
+        let stats = {};
+
+        ws.onopen = () => {
+            statusText.innerText = "System Connected";
+            statusBadge.classList.add("connected");
+        };
+
+        ws.onclose = () => {
+            statusText.innerText = "Disconnected";
+            statusBadge.classList.remove("connected");
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const label = data.label;
+            const conf = data.confidence;
+
+            resultLabel.innerText = label.toUpperCase();
+            resultConf.innerText = `Confidence: ${conf}`;
+            
+            if(label.includes("plastic")) resultLabel.style.color = "#00bcd4";
+            else if(label.includes("glass")) resultLabel.style.color = "#ff9800";
+            else if(label.includes("metal")) resultLabel.style.color = "#f44336";
+            else if(label.includes("battery")) resultLabel.style.color = "#f44336";
+            else if(label.includes("paper")) resultLabel.style.color = "#4caf50";
+            else if(label.includes("cardboard")) resultLabel.style.color = "#4caf50";
+            else resultLabel.style.color = "#00ff88";
+
+            updateStats(label);
+
+        };
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = "block";
+                    uploadText.style.display = "none";
+                    resultLabel.innerText = "--";
+                    resultLabel.style.color = "#fff";
+                    resultConf.innerText = "Ready to classify";
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function classifyImage() {
+            if (previewImage.src && ws.readyState === WebSocket.OPEN) {
+                ws.send(previewImage.src);
+                resultConf.innerText = "Processing...";
+            } else {
+                if(ws.readyState !== WebSocket.OPEN) {
+                    alert("Backend is not connected.");
+                } else {
+                    alert("Please upload an image first.");
+                }
+            }
+        }
+
+        function updateStats(label) {
+            if (!stats[label]) stats[label] = 0;
+            stats[label]++;
+            renderCounters();
+        }
+
+        function renderCounters() {
+            countersContainer.innerHTML = ""; 
+            Object.keys(stats).forEach(key => {
+                const count = stats[key];
+                let colorClass = "";
+                if(key.includes("plastic")) colorClass = "card-plastic";
+                else if(key.includes("glass")) colorClass = "card-glass";
+                else if(key.includes("metal")) colorClass = "card-metal";
+                else if(key.includes("battery")) colorClass = "card-metal";
+                else if(key.includes("paper")) colorClass = "card-paper";
+                else if(key.includes("cardboard")) colorClass = "card-paper";
+
+                const card = `
+                    <div class="counter-card ${colorClass}">
+                        <span>${key.toUpperCase()}</span>
+                        <span class="count-number">${count}</span>
+                    </div>
+                `;
+                countersContainer.innerHTML += card;
+            });
+        }
+
+        function switchTab(viewId, btnElement) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            // Show selected view
+            document.getElementById('view-' + viewId).classList.add('active');
+            // Activate selected button
+            btnElement.classList.add('active');
+        }
+    </script>
+</body>
+</html>
