@@ -26,7 +26,6 @@ Garbage Classification is a Deep Learning-based computer vision system designed 
 - `evaluate.py`: Script for generating classification reports and the confusion matrix.
 - `api.py`: The FastAPI backend server handling model loading and inference requests.
 - `index.html`: The user interface for the dashboard.
-- `run_app.bat`: Windows batch script to launch the application.
 
 ## Installation
 
@@ -63,6 +62,7 @@ run_app.bat
 **Osama El-Gohary**,
 **Mohamed Alaa** &
 **Mohamed Medhat**
+
 
 
 
