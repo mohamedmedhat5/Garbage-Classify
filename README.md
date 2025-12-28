@@ -57,9 +57,10 @@ run_app.bat
 
 ## Team Members
 
-**Rahma Reda**
-**Renad Ayman**
-**Manar Magdy**
-**Osama El-Gohary**
-**Mohamed Alaa**
+**Rahma Reda**,
+**Renad Ayman**,
+**Manar Magdy**,
+**Osama El-Gohary**,
+**Mohamed Alaa** $
 **Mohamed Medhat**
+
