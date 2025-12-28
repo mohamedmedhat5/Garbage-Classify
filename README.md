@@ -1,7 +1,7 @@
-# Smart-Eye: Intelligent Waste Classification System
+# Garbage Classification System
 
 ## Project Overview
-Smart-Eye is a Deep Learning-based computer vision system designed to classify waste materials into 12 distinct categories to assist in automated recycling processes. The system leverages Transfer Learning using the MobileNetV2 architecture, achieving a test accuracy of 95.6%. It includes a full-stack implementation with a FastAPI backend for real-time inference and a web-based dashboard for visualization.
+Garbage Classification is a Deep Learning-based computer vision system designed to classify waste materials into 12 distinct categories to assist in automated recycling processes. The system leverages Transfer Learning using the MobileNetV2 architecture, achieving a test accuracy of 95.6%. It includes a full-stack implementation with a FastAPI backend for real-time inference and a web-based dashboard for visualization.
 
 ## Key Features
 - **Architecture:** MobileNetV2 (Pre-trained on ImageNet) with a custom classification head.
@@ -63,5 +63,6 @@ run_app.bat
 **Osama El-Gohary**,
 **Mohamed Alaa** &
 **Mohamed Medhat**
+
 
 
