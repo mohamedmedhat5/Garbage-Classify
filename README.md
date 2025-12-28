@@ -61,6 +61,7 @@ run_app.bat
 **Renad Ayman**,
 **Manar Magdy**,
 **Osama El-Gohary**,
-**Mohamed Alaa** $
+**Mohamed Alaa** &
 **Mohamed Medhat**
+
 
